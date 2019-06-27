@@ -58,7 +58,7 @@ public class CustomerService {
         ObjectMapper objectMapper= new ObjectMapper();
         Customer customer=objectMapper.readValue(str,Customer.class);
         System.out.println("Got request to update "+ customer);
-        customerRepository.deleteById(customer.getId());
+       // customerRepository.deleteById(customer.getId());
         customerRepository.save(customer);
         channel.basicAck(tag,false);
         System.out.println("Sent response from update"+ customer);
