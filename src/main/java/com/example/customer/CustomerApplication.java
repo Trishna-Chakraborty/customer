@@ -35,10 +35,27 @@ public class CustomerApplication {
         return new Queue("updateCustomer", false, false, false, args);
     }
 
+
+    @Bean
+    Queue checkAccountQueue() {
+
+        Map<String, Object> args = new HashMap<String, Object>();
+        args.put("x-dead-letter-exchange", "dead_exchange");
+        args.put("x-message-ttl", 60000);
+        //args.put("x-dead-letter-routing-key","post.#");
+        return new Queue("checkAccount", false, false, false, args);
+    }
+
     @Bean
     DirectExchange customerExchange() {
         return new DirectExchange("customer_exchange");
     }
+
+    @Bean
+    DirectExchange accountExchange() {
+        return new DirectExchange("account_exchange");
+    }
+
 
     @Bean
     Binding postCustomerBinding(Queue postCustomerQueue, DirectExchange customerExchange) {
@@ -47,6 +64,10 @@ public class CustomerApplication {
     @Bean
     Binding updateCustomerBinding(Queue updateCustomerQueue, DirectExchange customerExchange) {
         return BindingBuilder.bind(updateCustomerQueue).to(customerExchange).with("update.customer");
+    }
+    @Bean
+    Binding checkAccountBinding(Queue checkAccountQueue, DirectExchange accountExchange) {
+        return BindingBuilder.bind(checkAccountQueue).to(accountExchange).with("check.account");
     }
 
 

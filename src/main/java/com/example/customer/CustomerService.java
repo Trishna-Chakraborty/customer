@@ -21,6 +21,10 @@ public class CustomerService {
     CustomerRepository customerRepository;
 
 
+    @Autowired
+    AccountRepository accountRepository;
+
+
     /*public List post(Customer customer){
         customerRepository.save(customer);
         return customerRepository.findAll();
@@ -66,6 +70,29 @@ public class CustomerService {
         //channel.basicAck(tag,false);
         System.out.println("Sent response from update"+ customer);
          return str;
+
+    }
+
+
+    @RabbitListener(queues = "checkAccount" )
+    @SendTo("reply_queue")
+    public  String checkAccount(String str, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException{
+        ObjectMapper objectMapper= new ObjectMapper();
+        Account account=objectMapper.readValue(str,Account.class);
+        System.out.println("Got request to check "+ account);
+        Account newAccount=accountRepository.findById(account.getId()).orElse(null);
+
+        if(newAccount!=null) {
+            System.out.println("Sent response from check : true");
+            return String.valueOf(true);
+        }
+        else {
+            System.out.println("Sent response from check : false");
+            return String.valueOf(false);
+        }
+
+
+
 
     }
 

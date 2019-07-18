@@ -1,0 +1,1 @@
+INSERT INTO account(id) VALUES ('7'),('8'),('9');
